@@ -1,0 +1,145 @@
+Анальгін
+Дорослим і дітям віком від 14 років зазвичай призначають по ½-1 таблетці (250-500 мг)
+1-2 рази на добу.
+Максимальна добова доза – 1 г.
+Дітям віком від 12 до 14 років – по ½ таблетки (250 мг) 1-2 рази на добу.
+
+Анаприлін
+Діти
+Препарат призначати дітям віком від 3 років
+Аритмія, феохромоцитома, тиреотоксикоз: препарат застосовувати дітям віком від 3 років у дозуванні 0,25-0,5 мг/кг маси тіла 3-4 рази на добу.
+Дорослі.
+Стенокардія, збудження, мігрень, есенціальний тремор: початкова доза становить 40 мг 
+
+Аспаркам
+1-2 таблетки 3 рази на добу
+Діти
+Досвіду застосування препарату дітям немає, тому препарат не слід застосовувати цій категорії пацієнтів.
+
+Аугментин
+
+
+Бисопролол
+
+Ванкомицин
+
+Димедрол
+Дорослі
+10–50 мг
+
+Діти
+Препарат не застосовувати у педіатричній практиці.
+
+
+Дроперидол
+
+Кордарон
+
+Курантил
+
+Мильгама
+
+Но-шпа
+Дорослі: 120-240 мг на добу за 2-3 прийоми.
+Діти: 
+6-12 років - 80 мг (розділена на 2 прийоми);
+від 12 років - 160 мг (розділена на 2-4 прийоми).
+до 6 років - застосування препарату протипоказано
+
+
+Оситрон
+
+Папаверин
+
+Парацетамол
+
+Мибазон
+
+Сумамед
+
+Супрастин
+
+Церукал
+
+Цефадокс
+
+Ципрофлоксацин
+
+
+
+
+
+
+
+
+
+const medcineList = [
+  {
+    name: "Анальгін",
+    child: true,
+    adult: true,
+    kilogramsDozing: false,
+    childKgLimit: null,
+    mlPerKgList: [],
+    childAgeRangeEl: [12, 14, 18],
+    childDozes: ["½ таблетки", "½-1 таблетка"],
+    adultDoze: "½-1 таблетка"
+  },
+  {
+    name: "Анаприлін",
+    child: true,
+    adult: true,
+    kilogramsDozing: true,
+    childKgLimit: null,
+    childAgeRangeEl: [3, 18],
+    mlPerKgList: [0,25],
+    childDozes: [],
+    adultDoze: "40 мг"
+  },
+  {
+    name: "Аспаркам",
+    child: false,
+    adult: true,
+    kilogramsDozing: false,
+    childKgLimit: null,
+    childAgeRangeEl: [],
+    mlPerKgList: [],
+    childDozes: [],
+    adultDoze: "1 таблетка"
+  },
+  {
+    name: "Аугментин",
+    child: true,
+    adult: true,
+    kilogramsDozing: true,
+    childKgLimit: 40,
+    childAgeRangeEl: [0, 18],
+    mlPerKgList: [25],
+    childDozes: [],
+    adultDoze: "1 таблетка"
+  },
+  {
+    name: "Бісопролол",
+    child: false,
+    adult: true,
+    kilogramsDozing: false,
+    childKgLimit: null,
+    childAgeRangeEl: [],
+    mlPerKgList: [],
+    childDozes: [],
+    adultDoze: "1,25 мг"
+  },
+  {
+    name: "Ванкоміцин",
+    child: false,
+    adult: true,
+    kilogramsDozing: false,
+    childKgLimit: null,
+    childAgeRangeEl: [0, 12, 18],
+    mlPerKgList: [],
+    childDozes: [10, 500],
+    adultDoze: "500 мг"
+  }
+
+]
+

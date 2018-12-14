@@ -1,15 +1,46 @@
-const {Button, TextView, ui} = require('tabris');
+const dozesCalculatorPage = require('./dozesCalculator');
+const analisysPage = require('./analisysCalculatorPage');
+const thesaurusPage = require('./thesaurus');
+const {Button, NavigationView, Page, contentView, ui} = require('tabris');
 
-let button = new Button({
-  centerX: 0, top: 100,
-  text: 'Show message'
+// blue = #009AFD
+// yellow = #FFA700
+// green = #00BC6F
+
+const navigationView = new NavigationView({
+  left: 0, top: 0, right: 0, bottom: 0
 }).appendTo(ui.contentView);
 
-let textView = new TextView({
-  centerX: 0, top: [button, 50],
-  font: '24px'
-}).appendTo(ui.contentView);
+const mainPage = new Page({
+  title: 'MedSaver'
+}).appendTo(navigationView);
 
-button.on('select', () => {
-  textView.text = 'Tabris.js rocks!';
-});
+new Button({
+    left: 8, top: 'prev() 8', right: 8,
+    height: 190,
+    textColor: "white",
+    font: "bold 30px",
+    background: "#009AFD",
+    text: dozesCalculatorPage.title
+}).on('select', () => dozesCalculatorPage.appendTo(navigationView))
+.appendTo(mainPage);
+
+new Button({
+    left: 8, top: 'prev() 8', right: 8,
+    height: 190,
+    textColor: "white",
+    background: "#FFA700",
+    font: "bold 30px",
+    text: analisysPage.title
+}).on('select', () => analisysPage.appendTo(navigationView))
+.appendTo(mainPage);
+
+new Button({
+    left: 8, top: 'prev() 8', right: 8,
+    height: 190,
+    textColor: "white",
+    font: "bold 30px",
+    background: "#00BC6F",
+    text: thesaurusPage.title
+}).on('select', () => thesaurusPage.appendTo(navigationView))
+.appendTo(mainPage);

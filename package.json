@@ -8,6 +8,10 @@
     "start": "tabris serve"
   },
   "dependencies": {
+    "dotenv": "^6.2.0",
+    "mongoose": "^5.3.16",
+    "mongoose-paginate": "^5.0.3",
+    "mongoose-sequence": "^4.0.1",
     "tabris": "^2.6.2"
   },
   "devDependencies": {
