@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "test": "eslint .",
+    "build": "build",
     "start": "tabris serve"
   },
   "dependencies": {
