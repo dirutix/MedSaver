@@ -96,6 +96,8 @@ new Picker({
   baseline: '#medcineLabel',
   itemCount: medcineList.length,
   itemText: index => medcineList[index].name
+}).on('select', ({value}) => {
+  page.find('#message').set('text', '');
 }).appendTo(page);
 
 new TextView({
@@ -177,6 +179,7 @@ new TextView({
 }).appendTo(page);
 
 let message = new TextView({
+  id: "message",
   left: MARGIN, 
   right: MARGIN, 
   top: '#horizontalStripe 30',
@@ -188,6 +191,8 @@ let message = new TextView({
 function calculate() {
   let medcine = medcineList[page.children('#medcinePicker').first().selectionIndex];
   let age = AGE[page.children('#agePicker').first().selectionIndex];
+  let weight = getWeight();
+  
   if (age >= 18 && medcine.adult){
     message.text = medcine.adultDoze;
   }
@@ -199,15 +204,64 @@ function calculate() {
       message.text = "Застосування препарату дітям протипоказано";
     else{ // child could use
       if(medcine.kilogramsDozing){
-        let weight = getWeight();
-        if (weight <= childKgLimit)
-          message.text = medcine.mlPerKg * weight + " мг";
+        let i = 0;
+        for(let rangeLimit of medcine.childAgeRangeEl)
+        {
+          if (rangeLimit >= age)
+          {
+            break;
+          }
+
+          i++;
+        }
+
+        if(i != 0 || (i == 0 && medcine.childAgeRangeEl[i] == age))
+        {
+          if (!medcine.childKgLimit){
+            if (weight <= medcine.childKgLimit)
+              message.text = medcine.mlPerKg * weight + " мг";
+            else
+              message.text = "Застосування препарату дітьми, чия вага вища за " + weight + " не є ефективним.";
+          }
+          else {
+            message.text = medcine.mlPerKg * weight + " мг";
+          }
+        }
         else
-          message.text = "Застосування препарату дітьми, чия вага вища за " + weight + " не є ефективним.";
+        {
+          message.text = "Застосування препарату дітьми, дозволено з " + 
+                        medcine.childAgeRangeEl[0] + 
+                        "-ти річного віку.";
+        }
+        
       }
       else{
         // тут нужно добавить проверку диапазонов
-        message.text = medcine.childDozes;
+        let i = 0; 
+        for(let rangeLimit of medcine.childAgeRangeEl)
+        {
+          if (rangeLimit >= age)
+          {
+            break;
+          }
+
+          i++;
+        }
+
+        if(i != 0)
+        {
+          message.text = medcine.childDozes[i-1];
+        }
+        else if(i == 0 && medcine.childAgeRangeEl[i] == age)
+        {
+          message.text = medcine.childDozes[i];
+        }
+        else
+        {
+          message.text = "Застосування препарату дітьми, дозволено з " + 
+                         medcine.childAgeRangeEl[0] + 
+                         "-ти річного віку.";
+        }
       }
         
     }
@@ -224,7 +278,7 @@ function calculate() {
 }
 
 function getWeight() {
-  let panel = scrollView.children('#weightPanel');
+  let panel = page.children('#weightPanel');
   return parseInt(panel.children('#weightSlider').first().selection);
 }
 
