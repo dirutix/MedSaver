@@ -1,123 +1,154 @@
-const {Composite, Page, TextView} = require('tabris');
 
-const MARGIN = 12;
-const TEXT = 'There was nothing so very remarkable in that; nor did Alice ' +
-  'think it so very much out of the way to hear the Rabbit say to itself, ‘Oh ' +
-  'dear! Oh dear! I shall be late!’ (when she thought it over afterwards, it ' +
-  'occurred to her that she ought to have wondered at this, but at the time ' +
-  'it all seemed quite natural); but when the Rabbit actually took a watch ' +
-  'out of its waistcoat-pocket, and looked at it, and then hurried on, Alice ' +
-  'started to her feet, for it flashed across her mind that she had never ' +
-  'before seen a rabbit with either a waistcoat-pocket, or a watch to take ' +
-  'out of it, and burning with curiosity, she ran across the field after it, ' +
-  'and fortunately was just in time to see it pop down a large rabbit-hole ' +
-  'under the hedge.';
 
-let trayState = 'down';
-let trayHeight;
-let dragOffset;
+const {CollectionView, Composite, ImageView, Button, NavigationView, Page, TextView, WebView, contentView, ui} = require('tabris');
+
+const ITEM_FETCH_COUNT = 15;
+
+var json = require('../thesaurus.json');
+let loading;
+let items = [];
+let lastId = 0;
+
 
 const page = new Page({
+  id: 'title',
   title: 'Довідник',
   autoDispose: false
 });
 
-new TextView({
-  left: MARGIN, right: MARGIN, top: MARGIN,
-  text: TEXT,
-  textColor: '#777'
-}).appendTo(page);
+const collectionView = new CollectionView({
+  left: 0, top: 0, right: 0, bottom: 0,
+  background: '#f5f5f5',
+  refreshEnabled: true,
+  cellHeight: 96,
+  cellType: index => items[index].loading ? 'loading' : 'normal',
+  createCell: (type) => {
+    if (type === 'normal') {
+      return createItemCell();
+    }
+    return createLoadingCell();
+  },
+  updateCell: (view, index) => {
+    const item = items[index];
+    if (!(item.loading)) {
+      view.find('#medcineName').set({text: item.name});
+      view.find('#container').first().item = item;
+    }
+  }
+})
+  .on('scroll', ({target: scrollView, deltaY}) => {
+    if (deltaY > 0) {
+      const remaining = items.length - scrollView.lastVisibleIndex;
+      if (remaining < 10) {
+        loadMoreItems();
+      }
+    }
+  }).appendTo(page);
 
-const shade = new Composite({
-  left: 0, right: 0, top: 0, bottom: 0,
-  background: '#009AFD',
-  opacity: 0
-}).appendTo(page);
+loadInitialItems();
 
-const tray = new Composite({
-  left: 0, right: 0, top: '30%', bottom: 0
-}).appendTo(page);
+function createLoadingCell() {
+  return new TextView({
+    centerY: 0,
+    alignment: 'center',
+    text: 'Loading...'
+  });
+}
 
-const strap = new Composite({
-  left: '40%', right: '40%', top: 0, height: 65,
-  background: '#259b24'
-}).appendTo(tray);
+function createItemCell() {
+  const cell = new Composite();
+  const container = new Composite({
+    id: 'container',
+    left: 16, right: 16, top: 8, bottom: 8,
+    cornerRadius: 2,
+    elevation: 2,
+    background: 'white',
+    highlightOnTouch: true
+  }).on('tap', ({target: view}) => {
+    createDetailsPage(view.item)})
+    .appendTo(cell);
+    
+  new TextView({
+    id: 'medcineName',
+    top: 8, left: ['#itemImage', 16], right: 16,
+    textColor: '#202020',
+    background: 'white',
+    font: 'medium 24px',
+    maxLines: 2
+  }).appendTo(container);
+  return cell;
+}
 
-const strapIcon = new TextView({
-  left: MARGIN, right: MARGIN, top: 20,
-  alignment: 'center',
-  text: '⇧',
-  font: 'bold 24px',
-  textColor: 'white'
-}).appendTo(strap);
+function createLoadingCell() {
+  return new TextView({
+    centerY: 0,
+    alignment: 'center',
+    text: 'Loading...'
+  });
+}
 
-const trayContent = new Composite({
-  left: MARGIN, right: MARGIN, top: [strap, 0], bottom: 0,
-  background: '#8bc34a'
-}).appendTo(tray);
+function loadInitialItems() {
+  collectionView.refreshIndicator = true;
+  items = getNewMedcines();
+  collectionView.itemCount = items.length;
+  collectionView.refreshIndicator = false;
+}
 
-new TextView({
-  left: MARGIN, right: MARGIN, top: MARGIN,
-  alignment: 'center',
-  text: 'Tray content',
-  font: 'bold 24px',
-  textColor: 'white'
-}).appendTo(trayContent);
+function loadMoreItems() {
+  if (!loading) {
+    loading = true;
+    // insert placeholder item
+    items.push({loading: true});
+    collectionView.insert(items.length, 1);
+    loading = false;
+    // remove placeholder item
+    items.splice(items.length - 1, 1);
+    collectionView.remove(-1);
+    // insert new items
+    const insertionIndex = items.length;
+    items = items.concat(getNewMedcines());
+    collectionView.insert(insertionIndex, ITEM_FETCH_COUNT);
+  }
+}
 
-trayContent.on('resize', () => {
-  const bounds = trayContent.bounds;
-  trayHeight = bounds.height;
-  if (trayState === 'dragging') {
-    positionTrayInRestingState(2000);
+function createDetailsPage(data) {
+  console.log(data);
+  const detailsPage = new Page({
+    background: 'black',
+    title: data.name,
+    autoDispose: false
+  }).appendTo(navigationView);
+  new TextView({
+    id: 'ageLabel',
+    text: data.structure,
+    left: MARGIN,
+    width: 120,
+    font: "18px",
+    top: '#medcineLabel 30'
+  }).appendTo(detailsPage);
+
+
+  if (data.url.substr(-4, 4) === '.jpg') {
+    new ImageView({
+      left: 0, top: 0, right: 0, bottom: 0,
+      image: data.url,
+      scaleMode: 'fit',
+      zoomEnabled: true
+    }).appendTo(detailsPage);
   } else {
-    tray.transform = {translationY: trayHeight};
+    new WebView({
+      left: 0, top: 0, right: 0, bottom: 0,
+      url: data.url
+    }).appendTo(detailsPage);
   }
-});
-
-strap.on('panVertical', ({state, translation, velocity}) => {
-  if (state === 'start' && (trayState === 'up' || trayState === 'down')) {
-    trayState = 'dragging';
-    dragOffset = tray.transform.translationY - translation.y;
-  }
-  if (trayState === 'dragging') {
-    const offsetY = Math.min(Math.max(translation.y + dragOffset, 0), trayHeight);
-    tray.transform = {translationY: offsetY};
-    shade.opacity = getShadeOpacity(offsetY);
-    strapIcon.transform = getStrapIconTransform(offsetY);
-  }
-  if (state === 'end' && trayState === 'dragging') {
-    positionTrayInRestingState(velocity.y);
-  }
-});
-
-strap.on('tap', () => {
-  if (trayState === 'up' || trayState === 'down') {
-    positionTrayInRestingState(trayState === 'down' ? -1000 : 1000);
-  }
-});
-
-function positionTrayInRestingState(velocity) {
-  trayState = 'animating';
-  const translationY = velocity > 0 ? trayHeight : 0;
-  const options = {
-    duration: Math.min(Math.abs(trayHeight / velocity * 1000), 800),
-    easing: Math.abs(velocity) >= 1000 ? 'ease-out' : 'ease-in-out'
-  };
-  shade.animate({opacity: getShadeOpacity(translationY)}, options);
-  strapIcon.animate({transform: getStrapIconTransform(translationY)}, options);
-  tray
-    .animate({transform: {translationY: translationY}}, options)
-    .then(() => trayState = velocity > 0 ? 'down' : 'up');
 }
 
-function getShadeOpacity(translationY) {
-  const traveled = translationY / trayHeight;
-  return Math.max(0, 0.75 - traveled);
-}
-
-function getStrapIconTransform(translationY) {
-  const traveled = translationY / trayHeight;
-  return {rotation: traveled * Math.PI - Math.PI};
+function getNewMedcines() {
+  let prevLastId = lastId;
+  if (lastId >= json.length)
+    return json.slice(prevLastId, json.length - 1);
+  lastId += ITEM_FETCH_COUNT;
+  return json.slice(prevLastId, lastId);
 }
 
 module.exports = page;
