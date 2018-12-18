@@ -8,6 +8,6 @@
     2 guys
   </author>
   <preference name="EnableDeveloperConsole" value="$IS_DEBUG" />
-  <splash src="./src/images/loading.png"/>
-  <icon src="./src/images/loading.png"/>
+  <splash src="res/loading.png"/>
+  <icon src="res/loading.png"/>
 </widget>
