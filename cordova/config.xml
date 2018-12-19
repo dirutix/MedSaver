@@ -9,5 +9,7 @@
   </author>
   <preference name="EnableDeveloperConsole" value="$IS_DEBUG" />
   <splash src="res/loading.png"/>
-  <icon src="res/loading.png"/>
+  <platform name="android">
+      <icon src="res/loading.png"/>
+  </platform>
 </widget>
