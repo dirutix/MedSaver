@@ -6,13 +6,15 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
-const {Composite, Page, TextView, Picker, Slider, Button, TextInput, ScrollView} = require('tabris');
+const {Composite, Page, TextView, Picker, Button, ui, TextInput, ScrollView} = require('tabris');
 
 const MARGIN = 15;
 
 let trayState = 'down';
 let trayHeight;
 let dragOffset;
+
+ui.navigationBar.set("displayMode", "default");
 
 const page = new Page({
   id: 'title',
