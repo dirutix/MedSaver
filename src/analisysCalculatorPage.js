@@ -6,7 +6,7 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
-const {Composite, Page, TextView, Picker, Button, ui, TextInput, ScrollView} = require('tabris');
+const {Composite, Page, TextView, Picker, Button, ui, TextInput, NavigationView, ScrollView} = require('tabris');
 
 const MARGIN = 15;
 
@@ -14,22 +14,26 @@ let trayState = 'down';
 let trayHeight;
 let dragOffset;
 
-ui.navigationBar.set("displayMode", "default");
-
 const page = new Page({
   id: 'title',
   title: 'Калькулятор аналізів',
   autoDispose: false
-});
+}).on('appear', () => {
+  //ui.navigationBar.displayMode = "hide";
+})
 
 const analysisList = [
   {
-    name: "Кліренс Креатиніну",
-    params: ["Вага(кг):", "Конц. креатиніну у сечі(ммоль/л):", "Конц. креатиніну у сиворотці(мкмоль/л):", "Хвилинний діурез(мл/1440хв):"],
-    result: (weight, piss, serum, min) => {
+    name: "Проба Реберга",
+    params: ["Вага(кг):", "Конц. креатиніну у сечі(результат аналізатора ммоль/л):", "Конц. креатиніну у сироватці(мкмоль/л):", "Добовий діурез(мл/добу):"],
+    result: (weight, piss, serum, dobe) => {
+      let pDobe = piss * (dobe/1000);
+      let min = dobe/1440;
       let s = (4 * weight + 7)/(weight + 90);
       let c = (piss * 1000 * min)/serum;
-      return c * 1.73 / s;
+      let ck = c * 1.73 / s;
+      let r = (ck - min)/ck * 100;
+      return min;
     },
     measure: "од."
   },
@@ -43,7 +47,7 @@ const analysisList = [
   },
   {
     name: "Лейкоцитарний індекс інтоксикації",
-    params: ["Міелоцити:", "Метаміелоцити:", "Палочкоядерні:", "Сегментоядерні:", "Площа клітини:", "Лімфоцити:", "Моноцити:", "Еозинофіли:"],
+    params: ["Міелоцити:", "Метаміелоцити:", "Паличкоядерні:", "Сегментоядерні:", "Площа клітини:", "Лімфоцити:", "Моноцити:", "Еозинофіли:"],
     result: (mi, met, branch, seg, square, limf, mon, eos) => {
       return (4 * mi + 3 * met + 2 * branch + seg) * (square + 1)/((limf + mon)*(eos + 1));
     },
@@ -73,7 +77,7 @@ new TextView({
   left: MARGIN, 
   top:   '#title 18', 
   width: 120,
-  font: '18px',
+  font: '18px bold',
   text: 'Аналіз:'
 }).appendTo(page);
 
@@ -141,8 +145,8 @@ let message = new TextView({
   id: "message",
   left: MARGIN, 
   right: MARGIN, 
-  top: '#horizontalStripe 30',
-  font: "bold 24px",
+  top: '#horizontalStripe 5',
+  font: "bold 20px",
   textColor: "#009AFD"
 }).appendTo(page);
 
@@ -154,31 +158,11 @@ function calculate() {
   params = map.call(params, function(item) {return item.text});
   params = params.filter(function(n) {return n !== ''});
   if(params.length < analys.params.length){
-    message.text = "Заповніть усі поля, будь-ласка";
+    message.text = "Шо";
   } else {
-    message.text = analys.name + " = " + analys.result(...params) + " " + analys.measure;
+    message.text = analys.name + " = " + analys.result(...params).toFixed(3) + " " + analys.measure;
   }
 
 }
-/*
-function createSeating() {
-  let seating = 'Anywhere';
-  scrollView.children('RadioButton').forEach((button) => {
-    if (button.checked) {
-      seating = button.text;
-    }
-  });
-  seating += ', ' + PILLS[scrollView.children('#classPicker').first().selectionIndex];
-  return seating;
-}
 
-function createWeight() {
-  let panel = scrollView.children('#luggagePanel');
-  return panel.children('#luggageSlider').first().selection + ' kg';
-}
-
-function createMeal() {
-  return scrollView.children('#veggieChoice').first().checked ? 'Vegetarian' : 'Standard';
-}
-*/
 module.exports = page;

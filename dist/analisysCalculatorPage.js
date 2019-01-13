@@ -8,7 +8,7 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
-const { Composite, Page, TextView, Picker, Slider, Button, TextInput, ScrollView } = require('tabris');
+const { Composite, Page, TextView, Picker, Button, ui, TextInput, NavigationView, ScrollView } = require('tabris');
 
 const MARGIN = 15;
 
@@ -20,7 +20,9 @@ const page = new Page({
   id: 'title',
   title: 'Калькулятор аналізів',
   autoDispose: false
-});
+}).on('appear', () => {
+  ui.navigationBar.displayMode = "hide";
+}).appendTo(ui.contentView);
 
 const analysisList = [{
   name: "Кліренс Креатиніну",
@@ -40,7 +42,7 @@ const analysisList = [{
   measure: "моль/літр"
 }, {
   name: "Лейкоцитарний індекс інтоксикації",
-  params: ["Міелоцити:", "Метаміелоцити:", "Палочкоядерні:", "Сегментоядерні:", "Площа клітини:", "Лімфоцити:", "Моноцити:", "Еозинофіли:"],
+  params: ["Міелоцити:", "Метаміелоцити:", "Паличкоядерні:", "Сегментоядерні:", "Площа клітини:", "Лімфоцити:", "Моноцити:", "Еозинофіли:"],
   result: (mi, met, branch, seg, square, limf, mon, eos) => {
     return (4 * mi + 3 * met + 2 * branch + seg) * (square + 1) / ((limf + mon) * (eos + 1));
   },
@@ -133,8 +135,8 @@ let message = new TextView({
   id: "message",
   left: MARGIN,
   right: MARGIN,
-  top: '#horizontalStripe 30',
-  font: "bold 24px",
+  top: '#horizontalStripe 5',
+  font: "bold 20px",
   textColor: "#009AFD"
 }).appendTo(page);
 
@@ -150,9 +152,9 @@ function calculate() {
     return n !== '';
   });
   if (params.length < analys.params.length) {
-    message.text = "Заповніть усі поля, будь-ласка";
+    message.text = "Шо";
   } else {
-    message.text = analys.name + " = " + analys.result(...params) + " " + analys.measure;
+    message.text = analys.name != "Лейкоцитарний індекс інтоксикації" ? analys.name : "ЛІІ" + " = " + analys.result(...params) + " " + analys.measure;
   }
 }
 /*

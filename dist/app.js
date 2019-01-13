@@ -178,7 +178,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#structureText 10',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -206,7 +206,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#pharmacologicalAction 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -234,7 +234,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#indications 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -262,7 +262,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#usage 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -290,7 +290,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#sideEffects 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -318,7 +318,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#contradictions 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -346,7 +346,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#overdoze 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 
@@ -374,7 +374,7 @@ function createDetailsPage(data) {
     right: 0,
     top: '#termsOfStorage 15',
     font: "2px",
-    background: "#FFA700",
+    background: "#00BC6F",
     width: 2
   }).appendTo(scrollView);
 

@@ -13,6 +13,8 @@ const navigationView = new NavigationView({
 
 const mainPage = new Page({
   title: 'MedSaver'
+}).on('appear', () => {
+  ui.navigationBar.displayMode = "hide";
 }).appendTo(navigationView);
 
 new Button({

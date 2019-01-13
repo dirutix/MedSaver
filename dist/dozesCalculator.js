@@ -199,9 +199,9 @@ function calculate() {
 
         if (i != 0 || i == 0 && medcine.childAgeRangeEl[i] == age) {
           if (!medcine.childKgLimit) {
-            if (weight <= medcine.childKgLimit) message.text = medcine.mlPerKg * weight + " мг";else message.text = "Застосування препарату дітьми, чия вага вища за " + weight + " не є ефективним.";
-          } else {
             message.text = medcine.mlPerKg * weight + " мг";
+          } else {
+            if (weight <= medcine.childKgLimit) message.text = medcine.mlPerKg * weight + " мг";else message.text = "Застосування препарату дітьми, чия вага вища за " + weight + " не є ефективним.";
           }
         } else {
           message.text = "Застосування препарату дітьми, дозволено з " + medcine.childAgeRangeEl[0] + "-ти річного віку.";

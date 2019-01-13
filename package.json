@@ -1,7 +1,7 @@
 {
   "name": "medsaver",
   "version": "0.1.0",
-  "main": "dist/app.js",
+  "main": "src/app.js",
   "private": true,
   "scripts": {
     "test": "eslint .",
