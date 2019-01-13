@@ -21,16 +21,20 @@ const page = new Page({
   title: 'Калькулятор аналізів',
   autoDispose: false
 }).on('appear', () => {
-  ui.navigationBar.displayMode = "hide";
-}).appendTo(ui.contentView);
+  //ui.navigationBar.displayMode = "hide";
+});
 
 const analysisList = [{
-  name: "Кліренс Креатиніну",
-  params: ["Вага(кг):", "Конц. креатиніну у сечі(ммоль/л):", "Конц. креатиніну у сиворотці(мкмоль/л):", "Хвилинний діурез(мл/1440хв):"],
-  result: (weight, piss, serum, min) => {
-    let s = (4 * weight + 7) / (weight + 90);
+  name: "Проба Реберга",
+  params: ["Вага(кг):", "Конц. креатиніну у сечі(результат аналізатора ммоль/л):", "Конц. креатиніну у сироватці(мкмоль/л):", "Добовий діурез(мл/добу):"],
+  result: (weight, piss, serum, dobe) => {
+    let pDobe = piss * (dobe / 1000);
+    let min = dobe / 1440;
+    let s = (weight * 4 + 7) / (weight + 90);
     let c = piss * 1000 * min / serum;
-    return c * 1.73 / s;
+    let ck = c * 1.73 / s;
+    let r = (ck - min) / ck * 100;
+    return r;
   },
   measure: "од."
 }, {
@@ -68,7 +72,7 @@ new TextView({
   left: MARGIN,
   top: '#title 18',
   width: 120,
-  font: '18px',
+  font: '18px bold',
   text: 'Аналіз:'
 }).appendTo(page);
 
@@ -146,7 +150,7 @@ function calculate() {
   let index = page.find("#analysisPicker").get('selectionIndex');
   let analys = analysisList[index];
   params = map.call(params, function (item) {
-    return item.text;
+    return parseInt(item.text);
   });
   params = params.filter(function (n) {
     return n !== '';
@@ -154,28 +158,8 @@ function calculate() {
   if (params.length < analys.params.length) {
     message.text = "Шо";
   } else {
-    message.text = analys.name != "Лейкоцитарний індекс інтоксикації" ? analys.name : "ЛІІ" + " = " + analys.result(...params) + " " + analys.measure;
+    message.text = analys.name + " = " + analys.result(...params).toFixed(3) + " " + analys.measure;
   }
 }
-/*
-function createSeating() {
-  let seating = 'Anywhere';
-  scrollView.children('RadioButton').forEach((button) => {
-    if (button.checked) {
-      seating = button.text;
-    }
-  });
-  seating += ', ' + PILLS[scrollView.children('#classPicker').first().selectionIndex];
-  return seating;
-}
 
-function createWeight() {
-  let panel = scrollView.children('#luggagePanel');
-  return panel.children('#luggageSlider').first().selection + ' kg';
-}
-
-function createMeal() {
-  return scrollView.children('#veggieChoice').first().checked ? 'Vegetarian' : 'Standard';
-}
-*/
 module.exports = page;

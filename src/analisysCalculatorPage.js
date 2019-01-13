@@ -29,11 +29,11 @@ const analysisList = [
     result: (weight, piss, serum, dobe) => {
       let pDobe = piss * (dobe/1000);
       let min = dobe/1440;
-      let s = (4 * weight + 7)/(weight + 90);
+      let s = (weight * 4 + 7)/(weight + 90);
       let c = (piss * 1000 * min)/serum;
       let ck = c * 1.73 / s;
       let r = (ck - min)/ck * 100;
-      return min;
+      return r;
     },
     measure: "од."
   },
@@ -155,7 +155,7 @@ function calculate() {
   let map = Array.prototype.map;
   let index = page.find("#analysisPicker").get('selectionIndex');
   let analys = analysisList[index];
-  params = map.call(params, function(item) {return item.text});
+  params = map.call(params, function(item) {return parseInt(item.text)});
   params = params.filter(function(n) {return n !== ''});
   if(params.length < analys.params.length){
     message.text = "Шо";
