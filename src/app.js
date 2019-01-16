@@ -15,6 +15,8 @@ const mainPage = new Page({
   title: 'MedSaver'
 }).on('appear', () => {
   ui.navigationBar.displayMode = "hide";
+  ui.statusBar.background = "#009AFD";
+  navigationView.toolbarColor = "#009AFD";
 }).appendTo(navigationView);
 
 new Button({
@@ -34,7 +36,11 @@ new Button({
     background: "#FFA700",
     font: "bold 30px",
     text: analisysPage.title
-}).on('select', () => analisysPage.appendTo(navigationView))
+}).on('select', () => {
+  analisysPage.appendTo(navigationView);
+  navigationView.toolbarColor = "#FFA700";
+  ui.statusBar.background = "#FFA700";
+})
 .appendTo(mainPage);
 
 
@@ -423,3 +429,5 @@ new Button({
   text: thesaurusPage.title
 }).on('select', () => thesaurusPage.appendTo(navigationView))
 .appendTo(mainPage);
+
+module.exports = navigationView;

@@ -8,7 +8,7 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
-const { Composite, Page, TextView, Picker, Button, ui, TextInput, NavigationView, ScrollView } = require('tabris');
+const { Composite, Page, TextView, Picker, Button, ui, TextInput, ScrollView } = require('tabris');
 
 const MARGIN = 15;
 
@@ -20,51 +20,70 @@ const page = new Page({
   id: 'title',
   title: 'Калькулятор аналізів',
   autoDispose: false
-}).on('appear', () => {
-  //ui.navigationBar.displayMode = "hide";
 });
 
 const analysisList = [{
   name: "Проба Реберга",
   params: ["Вага(кг):", "Конц. креатиніну у сечі(результат аналізатора ммоль/л):", "Конц. креатиніну у сироватці(мкмоль/л):", "Добовий діурез(мл/добу):"],
   result: (weight, piss, serum, dobe) => {
+    let res = [];
     let pDobe = piss * (dobe / 1000);
+    res.push({ name: "Креатинін в сечі(добовий)", value: pDobe, measure: "ммоль/доба" });
     let min = dobe / 1440;
+    res.push({ name: "Хвилинний діурез(за 1 хв)", value: min, measure: "мл/хв" });
     let s = (weight * 4 + 7) / (weight + 90);
+    res.push({ name: "Площа поверхні тіла", value: s, measure: "" });
     let c = piss * 1000 * min / serum;
     let ck = c * 1.73 / s;
+    res.push({ name: "Кліренс", value: ck, measure: "мл/хв" });
     let r = (ck - min) / ck * 100;
-    return r;
-  },
-  measure: "од."
+    res.push({ name: "Канальцева реабсорбція", value: r, measure: "%" });
+    return res;
+  }
+}, {
+  name: "Загальний білок та білкові фракції",
+  params: ["Загальний білок(г/л):", "Альбуміни(%):", "Глобуліни(%):", "Альфа-1-глобуліни(%):", "Альфа-2-глобуліни(%):", "Бета-глобуліни(%):", "Гамма-глобуліни(%):"],
+  result: (gen, alb, gl, alf1, alf2, beta, gamma) => {
+    let res = [];
+    let coef = gen / 100;
+    res.push({ name: "Альбуміни", value: coef * alb, measure: "г/л" });
+    res.push({ name: "Глобуліни", value: coef * gl, measure: "г/л" });
+    res.push({ name: "Фракція альфа-1-глобулінів(Alpha 1)", value: coef * alf1, measure: "г/л" });
+    res.push({ name: "Фракція альфа-2-глобулінів(Alpha 2)", value: coef * alf2, measure: "г/л" });
+    res.push({ name: "Фракція бета-глобулінів(Beta)", value: coef * beta, measure: "г/л" });
+    res.push({ name: "Фракція гамма-глобулінів(Gamma)", value: coef * gamma, measure: "г/л" });
+    return res;
+  }
 }, {
   name: "Кальцій іонізований",
   params: ["Кальцій:", "Aльбумін крові(од)):"],
   result: (ca, alb) => {
-    return ca * 878 / (alb * 15.05 + 1053);
-  },
-  measure: "моль/літр"
+    return [{
+      name: "Кальцій іонізований",
+      value: ca * 878 / (alb * 15.05 + 1053),
+      measure: "моль/літр"
+    }];
+  }
 }, {
   name: "Лейкоцитарний індекс інтоксикації",
   params: ["Міелоцити:", "Метаміелоцити:", "Паличкоядерні:", "Сегментоядерні:", "Площа клітини:", "Лімфоцити:", "Моноцити:", "Еозинофіли:"],
   result: (mi, met, branch, seg, square, limf, mon, eos) => {
-    return (4 * mi + 3 * met + 2 * branch + seg) * (square + 1) / ((limf + mon) * (eos + 1));
-  },
-  measure: "од."
-}, {
-  name: "Середній об'єм еритроцита",
-  params: ["Гематокрит(%):", "Кількість еритроцитів(10^12/л):"],
-  result: (hem, quant) => {
-    return hem * 10 / quant;
-  },
-  measure: "фл(фемолітр)"
+    return [{
+      name: "Лейкоцитарний індекс інтоксикації",
+      value: (4 * mi + 3 * met + 2 * branch + seg) * (square + 1) / ((limf + mon) * (eos + 1)),
+      measure: "од."
+    }];
+  }
 }, {
   name: "Концентрація гемоглобіну в еритроциті",
   params: ["Гемоглобін(г/дл):", "Гематокрит(%):"],
   result: (hb, ht) => {
-    return hb * 100 / ht;
-  },
-  measure: "г/дл"
+    return [{
+      name: "Концентрація гемоглобіну в еритроциті",
+      value: hb * 100 / ht,
+      measure: "г/дл"
+    }];
+  }
 }];
 
 new TextView({
@@ -72,7 +91,7 @@ new TextView({
   left: MARGIN,
   top: '#title 18',
   width: 120,
-  font: '18px bold',
+  font: 'bold 19px',
   text: 'Аналіз:'
 }).appendTo(page);
 
@@ -90,8 +109,8 @@ new Picker({
     new TextView({
       id: 'argument' + index,
       top: '#argument' + (index - 1) + ' 10',
-      width: 150,
-      font: '18px',
+      width: 200,
+      font: '17px',
       text: value
     }).appendTo(block);
 
@@ -100,7 +119,7 @@ new Picker({
       left: '#argument' + index + ' 10',
       top: '#argument' + (index - 1),
       width: 80,
-      borderColor: 'yellow',
+      borderColor: '#FFA700',
       message: 'Type here',
       keyboard: 'number'
     }).appendTo(block);
@@ -129,20 +148,23 @@ new TextView({
   id: "horizontalStripe",
   left: 0,
   right: 0,
-  top: '#calculateButton 30',
+  top: '#calculateButton 15',
   font: "2px",
-  background: "#009AFD",
+  background: "#FFA700",
   width: 2
+}).appendTo(page);
+
+let scrollView = new ScrollView({
+  left: 0, right: 0, top: '#horizontalStripe 5', bottom: 0,
+  direction: 'vertical'
 }).appendTo(page);
 
 let message = new TextView({
   id: "message",
-  left: MARGIN,
-  right: MARGIN,
-  top: '#horizontalStripe 5',
-  font: "bold 20px",
-  textColor: "#009AFD"
-}).appendTo(page);
+  left: 0, right: 0,
+  font: "bold 19px",
+  textColor: "#FFA700"
+}).appendTo(scrollView);
 
 function calculate() {
   let params = page.find(TextInput);
@@ -150,7 +172,7 @@ function calculate() {
   let index = page.find("#analysisPicker").get('selectionIndex');
   let analys = analysisList[index];
   params = map.call(params, function (item) {
-    return parseInt(item.text);
+    return parseFloat(item.text);
   });
   params = params.filter(function (n) {
     return n !== '';
@@ -158,7 +180,11 @@ function calculate() {
   if (params.length < analys.params.length) {
     message.text = "Шо";
   } else {
-    message.text = analys.name + " = " + analys.result(...params).toFixed(3) + " " + analys.measure;
+    message.text = "";
+    let res = analys.result(...params);
+    for (let out of res) {
+      message.text += out.name + " = " + out.value.toFixed(3) + " " + out.measure + "\n";
+    }
   }
 }
 

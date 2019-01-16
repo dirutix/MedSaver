@@ -35,7 +35,11 @@ new Button({
   background: "#FFA700",
   font: "bold 30px",
   text: analisysPage.title
-}).on('select', () => analisysPage.appendTo(navigationView)).appendTo(mainPage);
+}).on('select', () => {
+  analisysPage.appendTo(navigationView);
+  navigationView.toolbarColor = "#FFA700";
+  ui.statusBar.background = "#FFA700";
+}).appendTo(mainPage);
 
 const ITEM_FETCH_COUNT = 15;
 
