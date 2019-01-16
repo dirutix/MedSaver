@@ -1,11 +1,11 @@
 {
   "name": "medsaver",
   "version": "0.1.0",
-  "main": "src/app.js",
+  "main": "dist/app.js",
   "private": true,
   "scripts": {
     "test": "eslint .",
-    "build": "android",
+    "build": "babel --compact false --out-dir dist/ src/",
     "start": "tabris serve"
   },
   "dependencies": {
